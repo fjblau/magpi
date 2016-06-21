@@ -80,17 +80,18 @@ int main(int argc, char *argv[])
 	writeMagReg( CTRL_REG6_XM, 0b01100000);   // +/-12gauss
 	writeMagReg( CTRL_REG7_XM, 0b00000000);   // Continuous-conversion mode
 
-//	while(1)
-//	{
+	while(1)
+	{
 
 		time_t rawtime;
-   		struct tm *info;
+   		struct tm *info, *infoBack;
+   		
    		char buffer[80];
+   		char bufferBack[80];
 
    		time( &rawtime );
 
    		info = localtime( &rawtime );
-
    		strftime(buffer,80,"%Y-%m-%dT%H:%M:%S", info);
 
 		readMAG(magRaw);
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
 		magRaw[1] -= (magYmin + magYmax) /2 ;
 		magRaw[2] -= (magZmin + magZmax) /2 ;
 
-		printf("%s,%i,%i,%i\n", buffer, magRaw[0],magRaw[1],magRaw[2]);
+		//printf("%s,%i,%i,%i\n", buffer, magRaw[0],magRaw[1],magRaw[2]);
 		
 		char sql[255];
 		char str[100];
@@ -117,13 +118,15 @@ int main(int argc, char *argv[])
 		sprintf(str, "%d",magRaw[2]);
 		strcat (sql, str);
 		strcat (sql, ")\"}");
-        printf (sql);
+        //printf (sql);
         
     	curl = curl_easy_init();
    		if(curl) {
     	curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.132:4200/_sql?pretty");
     	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, sql);
     	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(sql));
+    	FILE* devnull = fopen("nul", "w"); 
+    	curl_easy_setopt(curl, CURLOPT_WRITEDATA, devnull);
  
     	res = curl_easy_perform(curl);
    	 	/* Check for errors */ 
@@ -139,9 +142,9 @@ int main(int argc, char *argv[])
 		magRaw[1] = -magRaw[1];
 
 		//Sleep for 0.25ms
-//		sleep(60);
+		usleep(50);
 
-//	}
+	}
 
 }
 
