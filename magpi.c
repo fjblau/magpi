@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 		char sql[255];
 		char str[100];
 		
-		strcpy (sql, "{\"stmt\":\"Insert into mag2 values (\'");
+		strcpy (sql, "{\"stmt\":\"Insert into mag values (\'");
 		
 		strcat (sql, buffer);
 		strcat (sql, "\',");
